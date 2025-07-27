@@ -10,7 +10,7 @@ namespace MBD_SVLongerQuests
     {
         public const string pluginGuid = "macrosblackd.starvalormods.longerquests";
         public const string pluginName = "Longer Quest Duration";
-        public const string pluginVersion = "0.1.0";
+        public const string pluginVersion = "1.0.0";
 
         static ManualLogSource logger = new ManualLogSource("(MBD) LongerQuests");
         
@@ -26,8 +26,8 @@ namespace MBD_SVLongerQuests
 
         private void LoadConfig()
         {
-            durationMultiplier = Config.Bind<int>("General", "QuestDurationMultiplier", 5,
-                "The multiplier for how much longer you want quests to last.");
+            durationMultiplier = Config.Bind<int>("General", "QuestDurationMultiplier", 3,
+                "The multiplier for how much longer you want delivery quests to last. Affects local & regional delivery quests.");
         }
 
         [HarmonyPatch(typeof(SM_MissionBoard), nameof(SM_MissionBoard.GenerateQuests))]
@@ -39,8 +39,6 @@ namespace MBD_SVLongerQuests
                 if (stationQuest.quest.deliveryTime > 0 && stationQuest.quest.par1 != -55)
                 {
                     logger.LogInfo($"Found quest with deliver time: {stationQuest.quest.deliveryTime}");
-                    logger.LogDebug($"TextPar1: {stationQuest.quest.textPar1}");
-                    logger.LogDebug($"par1: {stationQuest.quest.par1}");
                     stationQuest.quest.deliveryTime *= durationMultiplier.Value;
                     stationQuest.quest.par1 = -55;
                     logger.LogInfo($"New Delivery time: {stationQuest.quest.deliveryTime}");
