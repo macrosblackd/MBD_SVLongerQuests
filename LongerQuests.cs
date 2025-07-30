@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using UnityEngine;
 
 namespace MBD_SVLongerQuests
 {
@@ -40,22 +41,28 @@ namespace MBD_SVLongerQuests
         {
             foreach (var stationQuest in __instance.quests)
             {
-                if (stationQuest.quest.deliveryTime > 0 && stationQuest.quest.par1 != -55)
-                {
-                    logger.LogInfo($"Found quest with deliver time: {stationQuest.quest.deliveryTime}");
-                    if (noDeliveryDuration.Value)
-                    {
-                        stationQuest.quest.deliveryTime = 0;
-                        logger.LogInfo("New Delivery time: 0 (no delivery duration)");
-                        continue;
-                    } else
-                    {
-                        stationQuest.quest.deliveryTime *= durationMultiplier.Value;
-                        logger.LogInfo($"New Delivery time: {stationQuest.quest.deliveryTime}");
-                    }
-                    stationQuest.quest.par1 = -55;
+                UpdateQuestTimeout(ref stationQuest.quest);
+            }
+        }
 
-                }
+        [HarmonyPatch(typeof(QuestControl), nameof(QuestControl.VerifyQuestTimeout))]
+        public static void PreFix_QuestControl_VerifyQuestTimeout(QuestControl __instance, Transform playerTrans)
+        {
+            for (int currentQuestIndex = 0; currentQuestIndex < PChar.Char.activeQuests.Count; currentQuestIndex++)
+            {
+                Quest quest = PChar.Char.activeQuests[currentQuestIndex];
+                UpdateQuestTimeout(ref quest);
+            }
+        }
+
+        private static void UpdateQuestTimeout(ref Quest quest)
+        {
+            if (quest.deliveryTime > 0 && quest.par1 != -55)
+            {
+                logger.LogInfo($"Found unchanged active quest with delivery time: {quest.deliveryTime}");
+                quest.deliveryTime = noDeliveryDuration.Value ? 0 : quest.deliveryTime * durationMultiplier.Value;
+                quest.par1 = -55;
+                logger.LogInfo($"Updated active quest delivery time: {quest.deliveryTime}");
             }
         }
     }
