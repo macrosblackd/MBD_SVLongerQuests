@@ -39,29 +39,36 @@ namespace MBD_SVLongerQuests
         [HarmonyPostfix()]
         public static void PostFix(SM_MissionBoard __instance)
         {
-            foreach (var stationQuest in __instance.quests)
+            logger.LogDebug("PostFix_SM_MissionBoard_GenerateQuests called");
+            for (int currentQuestIndex = 0; currentQuestIndex < __instance.quests.Count; currentQuestIndex++)
             {
+                StationQuest stationQuest = __instance.quests[currentQuestIndex];
                 UpdateQuestTimeout(ref stationQuest.quest);
+                __instance.quests[currentQuestIndex] = stationQuest;
             }
         }
 
-        [HarmonyPatch(typeof(QuestControl), nameof(QuestControl.VerifyQuestTimeout))]
-        public static void PreFix_QuestControl_VerifyQuestTimeout(QuestControl __instance, Transform playerTrans)
+        [HarmonyPatch(typeof(QuestControl), "VerifyAllQuests")]
+        [HarmonyPrefix]
+        public static void PreFix_QuestControl_VerifyAllQuests(QuestControl __instance)
         {
+            logger.LogDebug("PreFix_QuestControl_VerifyAllQuests called");
             for (int currentQuestIndex = 0; currentQuestIndex < PChar.Char.activeQuests.Count; currentQuestIndex++)
             {
                 Quest quest = PChar.Char.activeQuests[currentQuestIndex];
                 UpdateQuestTimeout(ref quest);
+                PChar.Char.activeQuests[currentQuestIndex] = quest;    
             }
         }
 
         private static void UpdateQuestTimeout(ref Quest quest)
         {
-            if (quest.deliveryTime > 0 && quest.par1 != -55)
+            if (quest.deliveryTime > 0 && quest.par1 != -66)
             {
-                logger.LogInfo($"Found unchanged active quest with delivery time: {quest.deliveryTime}");
+                logger.LogInfo($"Found unchanged active quest with delivery time: {quest.deliveryTime} && deadline: {quest.deadline}");
                 quest.deliveryTime = noDeliveryDuration.Value ? 0 : quest.deliveryTime * durationMultiplier.Value;
-                quest.par1 = -55;
+                quest.deadline = GameData.timePlayed + quest.deliveryTime;
+                quest.par1 = -66;
                 logger.LogInfo($"Updated active quest delivery time: {quest.deliveryTime}");
             }
         }
