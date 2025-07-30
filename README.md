@@ -7,6 +7,7 @@ MBD_SVLongerQuests is a BepInEx plugin for Star Valor that increases the duratio
 ## Features
 
 - Configurable quest duration multiplier (default: 3x).
+- Option to disable delivery quest timeout entirely.
 - Applies to both local and regional delivery quests.
 
 ## Installation
@@ -19,8 +20,9 @@ MBD_SVLongerQuests is a BepInEx plugin for Star Valor that increases the duratio
    1. Download and install BepInEx in your Star Valor game directory.
    2. Place the compiled `MBD_SVLongerQuests.dll` into the `BepInEx/plugins` folder.
    3. Launch Star Valor. The mod will automatically load.
-   4. Configuration file (`MBD_SVLongerQuests.cfg`) will be generated in `BepInEx/config` after first launch. Adjust `QuestDurationMultiplier` as desired.
+   4. Configuration file (`MBD_SVLongerQuests.cfg`) will be generated in `BepInEx/config` after first launch. Adjust configuration options as desired.
 
 ## Configuration
 
 - `QuestDurationMultiplier`: Sets how much longer delivery quests last (default: 3).
+- `DisableDeliveryQuestTimeout`: If set to `true`, delivery quests will not expire due to time limits.
