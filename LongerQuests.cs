@@ -11,7 +11,7 @@ namespace MBD_SVLongerQuests
     {
         public const string pluginGuid = "macrosblackd.starvalormods.longerquests";
         public const string pluginName = "Longer Quest Duration";
-        public const string pluginVersion = "1.1.0";
+        public const string pluginVersion = "1.1.1";
 
         static ManualLogSource logger = new ManualLogSource("(MBD) LongerQuests");
         
